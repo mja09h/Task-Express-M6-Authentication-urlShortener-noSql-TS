@@ -13,7 +13,10 @@ export const signup = async (req: Request, res: Response, next: NextFunction) =>
         const hashedPassword = await bcrypt.hash(password, 10);
 
         const newUser = await User.create({ username, password: hashedPassword });
-        const token = jwt.sign({ id: newUser._id }, JWT_SECRET, { expiresIn: "1h" });
+        const token = jwt.sign({ 
+            id: newUser._id }, 
+            JWT_SECRET, 
+            { expiresIn: "1d" });
 
         res.status(201).json({ token });
     } catch (err) {
@@ -38,7 +41,11 @@ export const signin = async (req: Request, res: Response, next: NextFunction) =>
             return;
         }
 
-        const token = jwt.sign({ id: user._id }, JWT_SECRET, { expiresIn: "1h" });
+        const token = jwt.sign({ 
+            id: user._id }, 
+            JWT_SECRET, 
+            { expiresIn: "1d" });
+
         res.status(200).json({ token });
     } catch (err) {
         next(err);
@@ -48,6 +55,7 @@ export const signin = async (req: Request, res: Response, next: NextFunction) =>
 export const getUsers = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const users = await User.find().populate("urls");
+
         res.status(201).json(users);
     } catch (err) {
         next(err);

@@ -3,6 +3,7 @@ import User from "../../models/User";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import dotenv from "dotenv";
+import { CustomRequest } from "../../../types/http";
 
 const JWT_SECRET = process.env.JWT_SECRET || "secret";
 dotenv.config();
@@ -55,6 +56,12 @@ export const signin = async (req: Request, res: Response, next: NextFunction) =>
 export const getUsers = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const users = await User.find().populate("urls");
+        const request = req as CustomRequest;
+
+        if (request.user?.role !== "admin") {
+            res.status(403).json({ message: "Forbidden" });
+            return;
+        }
 
         res.status(201).json(users);
     } catch (err) {
